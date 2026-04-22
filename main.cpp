@@ -1,8 +1,13 @@
-#include "Manager.h"
 #include <iostream>
+#include <vector>
+#include "MovieManager.h"
+#include "UserManager.h"
+#include "Rating.h"
 
 int main() {
-    Manager manager;
+    MovieManager movieMgr;
+    UserManager userMgr;
+    std::vector<Rating> ratings; 
     int choice;
 
     while (true) {
@@ -40,14 +45,33 @@ int main() {
         }
 
         switch (choice) {
-            case 1: manager.addMovie(); break;
-            case 2: manager.searchByTitle(); break;
-            case 3: manager.printAllMovies(); break;
-            case 4: manager.sortByRating(); break;
-            case 5: manager.addUser(); break;
-            case 6: manager.printAllUsers(); break;
-            case 7: manager.addRating(); break;
-            case 8: manager.showMovieRatings(); break;
+            case 1: movieMgr.addMovie(); break;
+            case 2: movieMgr.searchByTitle(); break;
+            case 3: movieMgr.printAllMovies(); break;
+            case 4: movieMgr.sortByRating(); break;
+            case 5: userMgr.addUser(); break;
+            case 6: userMgr.printAllUsers(); break;
+            case 7: {
+                int uId, mId;
+                double score;
+                std::cout << "사용자 ID: "; std::cin >> uId;
+                std::cout << "영화 ID: "; std::cin >> mId;
+                std::cout << "평점(0-5): "; std::cin >> score;
+
+                if (userMgr.exists(uId) && movieMgr.exists(mId)) {
+                    ratings.push_back(Rating(uId, mId, score));
+                    movieMgr.updateMovieRating(mId, score); // 영화 평균 평점 갱신
+                    std::cout << "평점이 성공적으로 등록되었습니다.\n";
+                } else {
+                    std::cout << "오류: 존재하지 않는 사용자 ID 또는 영화 ID입니다.\n";
+                }
+                break;
+            }
+            case 8: {
+                
+                movieMgr.showMovieRatingsWithData(ratings); 
+                break;
+            }
             default:
                 std::cout << "존재하지 않는 메뉴입니다.\n";
                 break;

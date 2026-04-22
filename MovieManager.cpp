@@ -1,10 +1,10 @@
-#include "Manager.h"
+#include "MovieManager.h"
 #include <iostream>
 #include <algorithm> 
 #include <string>
 
 // 1. 영화 추가
-void Manager::addMovie() {
+void MovieManager::addMovie() {
     int id, year;
     std::string title, genre;
     
@@ -18,7 +18,7 @@ void Manager::addMovie() {
 }
 
 // 2. 제목으로 검색
-void Manager::searchByTitle() {
+void MovieManager::searchByTitle() {
     std::string target;
     std::cout << "검색할 제목 입력: ";
     std::cin.ignore();
@@ -35,7 +35,7 @@ void Manager::searchByTitle() {
 }
 
 // 3. 전체 영화 목록 출력
-void Manager::printAllMovies() {
+void MovieManager::printAllMovies() const{
     if (movies.empty()) {
         std::cout << "등록된 영화가 없습니다.\n";
         return;
@@ -47,7 +47,7 @@ void Manager::printAllMovies() {
 }
 
 // 4. 평점순 정렬 출력 
-void Manager::sortByRating() {
+void MovieManager::sortByRating() {
     if (movies.empty()) {
         std::cout << "정렬할 영화가 없습니다.\n";
         return;
@@ -64,67 +64,40 @@ void Manager::sortByRating() {
     }
 }
 
-// 5. 사용자 추가
-void Manager::addUser() {
-    int id;
-    std::string name, email;
-    std::cout << "사용자 ID: "; std::cin >> id;
-    std::cout << "이름: "; std::cin.ignore(); std::getline(std::cin, name);
-    std::cout << "이메일: "; std::getline(std::cin, email);
 
-    users.push_back(User(id, name, email));
-    std::cout << "사용자가 추가되었습니다.\n";
+
+// 영화 존재 여부 확인
+bool MovieManager::exists(int id) const {
+    for (const auto& m : movies) {
+        if (m.getId() == id) return true;
+    }
+    return false;
 }
 
-// 6. 사용자 목록 출력
-void Manager::printAllUsers() {
-    if (users.empty()) {
-        std::cout << "등록된 사용자가 없습니다.\n";
-        return;
-    }
-    for (const auto& u : users) {
-        u.display();
-    }
-}
-
-// 7. 평점 입력
-void Manager::addRating() {
-    int uId, mId;
-    double score;
-    std::cout << "사용자 ID: "; std::cin >> uId;
-    std::cout << "영화 ID: "; std::cin >> mId;
-    std::cout << "평점(0~5): "; std::cin >> score;
-
-    // 1. Rating 객체 저장
-    ratings.push_back(Rating(uId, mId, score));
-
-    // 2. 실제 Movie 객체에 평점 반영 (평점 평균 업데이트를 위해)
+// 평점 데이터가 들어왔을 때 해당 영화 평점 갱신
+void MovieManager::updateMovieRating(int id, double score) {
     for (auto& m : movies) {
-        if (m.getId() == mId) {
-            m.addRating(score);
-            std::cout << "평점이 반영되었습니다.\n";
+        if (m.getId() == id) {
+            m.addRating(score); // Movie 클래스의 addRating 호출
             return;
         }
     }
-    std::cout << "해당 ID의 영화를 찾을 수 없습니다.\n";
 }
-
-// 8. 영화별 전체 평점 목록 조회
-void Manager::showMovieRatings() {
+void MovieManager::showMovieRatingsWithData(const std::vector<Rating>& ratings) const {
     if (movies.empty()) {
         std::cout << "영화 데이터가 없습니다.\n";
         return;
     }
     for (const auto& m : movies) {
-        std::cout << "[" << m.getTitle() << "] 평점 목록: ";
-        bool hasRating = false;
+        std::cout << "[" << m.getTitle() << "] 평점: ";
+        bool found = false;
         for (const auto& r : ratings) {
             if (r.getMovieId() == m.getId()) {
                 std::cout << r.getScore() << " ";
-                hasRating = true;
+                found = true;
             }
         }
-        if (!hasRating) std::cout << "(평점 없음)";
+        if (!found) std::cout << "(평점 없음)";
         std::cout << std::endl;
     }
 }
