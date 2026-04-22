@@ -1,5 +1,7 @@
 #pragma once
+#include <iostream>
 #include <string>
+#include <vector>
 
 class Movie {
 private:
@@ -9,11 +11,18 @@ private:
     int         releaseYear;
     double      totalRating;    // averageRating 제거
     int         ratingCount;    // 추가
+    std::vector<double> ratings;
 
 public:
     Movie();                    // 기본 생성자 추가
     Movie(int id, const std::string& title,
           const std::string& genre, int year);
+
+    bool operator==(int targetId) const;
+    bool operator==(const std::string& targetTitle) const;
+    bool operator<(const Movie& other) const;
+    bool operator>(const Movie& other) const;
+    friend std::ostream& operator<<(std::ostream& os, const Movie& m);
 
     int         getId()              const;
     std::string getTitle()           const;

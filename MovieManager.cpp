@@ -20,18 +20,15 @@ void MovieManager::addMovie() {
 // 2. 제목으로 검색
 void MovieManager::searchByTitle() {
     std::string target;
-    std::cout << "검색할 제목 입력: ";
+    std::cout << "검색할 제목: ";
     std::cin.ignore();
     std::getline(std::cin, target);
 
-    bool found = false;
     for (const auto& m : movies) {
-        if (m.getTitle().find(target) != std::string::npos) {
-            m.display();
-            found = true;
+        if (m == target) {  
+            std::cout << m << std::endl; 
         }
     }
-    if (!found) std::cout << "검색 결과가 없습니다.\n";
 }
 
 // 3. 전체 영화 목록 출력
@@ -48,19 +45,13 @@ void MovieManager::printAllMovies() const{
 
 // 4. 평점순 정렬 출력 
 void MovieManager::sortByRating() {
-    if (movies.empty()) {
-        std::cout << "정렬할 영화가 없습니다.\n";
-        return;
-    }
-    // 원본 보호를 위해 복사본 생성
     std::vector<Movie> sorted = movies;
-    std::sort(sorted.begin(), sorted.end(), [](const Movie& a, const Movie& b) {
-        return a.getAverageRating() > b.getAverageRating(); 
-    });
+    
+    
+    std::sort(sorted.begin(), sorted.end(), std::greater<Movie>()); 
 
-    std::cout << "\n[ 평점순 정렬 결과 ]\n";
     for (const auto& m : sorted) {
-        m.display();
+        std::cout << m << std::endl; 
     }
 }
 
@@ -69,7 +60,7 @@ void MovieManager::sortByRating() {
 // 영화 존재 여부 확인
 bool MovieManager::exists(int id) const {
     for (const auto& m : movies) {
-        if (m.getId() == id) return true;
+        if (m == id) return true; // operator==(int) 호출
     }
     return false;
 }
