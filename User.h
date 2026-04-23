@@ -11,6 +11,9 @@ public:
     User();
     User(int id, const std::string& name, const std::string& email);
 
+    bool operator==(int targetId) const;
+    friend std::ostream& operator<<(std::ostream& os, const User& u);
+
     
     int         getId()     const;
     std::string getName()   const;

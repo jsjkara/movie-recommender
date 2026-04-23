@@ -21,14 +21,14 @@ void UserManager::printAllUsers() const{
         return;
     }
     for (const auto& u : users) {
-        u.display();
+        std::cout << u << std::endl;
     }
 }
 
 // 사용자 존재 여부 확인
 bool UserManager::exists(int id) const {
     for (const auto& u : users) {
-        if (u.getId() == id) return true;
+        if (u == id) return true;
     }
     return false;
 }
