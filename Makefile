@@ -1,17 +1,25 @@
 CXX      = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -g
-TARGET   = movie_recommender
-SRCS     = main.cpp Movie.cpp User.cpp Rating.cpp UserManager.cpp MovieManager.cpp
-OBJS     = $(SRCS:.cpp=.o)
-
+CXXFLAGS = -std=c++17 -Wall -g -Iinclude
+TARGET   = recommend
+SRCDIR   = src
+OBJDIR   = obj
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/Movie.o $(OBJDIR)/MovieManager.o $(OBJDIR)/User.o $(OBJDIR)/UserManager.o $(OBJDIR)/Rating.o $(OBJDIR)/RatingManager.o $(OBJDIR)/SimilarityCalculator.o
+ 
+all: $(TARGET)
+ 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
-
-%.o: %.cpp
+ 
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
+ 
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+ 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(OBJDIR) $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)
+
+.PHONY: all clean run
