@@ -20,4 +20,5 @@ public:
     void sortByRating();
     bool exists(int id) const;
     void updateMovieRating(int id, double score);
+    void syncRatings(const class RatingManager& ratingMgr);
 };

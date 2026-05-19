@@ -1,4 +1,5 @@
 #include "MovieManager.h"
+#include "RatingManager.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -40,7 +41,6 @@ void MovieManager::printAllMovies() const {
     }
     std::cout << "\n[ 영화 전체 목록 ]\n";
     for (const auto& m : movies) {
-        // 기존에 수정한 operator<<가 있다면 std::cout << m << std::endl;로 변경 가능
         m.display(); 
     }
 }
@@ -83,38 +83,55 @@ void MovieManager::saveToFile(const std::string& filename) const {
     }
 
     for (const auto& m : movies) {
-        // 무결성을 위해 year 데이터도 파이프 라인에 추가합니다.
         outFile << m.getId() << "|" 
                 << m.getTitle() << "|" 
                 << m.getGenre() << "|" 
-                << m.getReleaseYear() << std::endl; // 평점은 어차피 ratings.txt에서 복구하므로 빼는 게 안전합니다.
+                << m.getReleaseYear() << std::endl;
     }
     outFile.close();
 }
 
-// 💡 6. 파일에서 영화 데이터 읽어오기 (완벽 복원 구조)
+// 💡 6. 파일에서 영화 데이터 읽어오기
 void MovieManager::loadFromFile(const std::string& filename) {
-    std::ifstream inFile(filename);
-    if (!inFile) return; 
+    std::ifstream file(filename);
+    if (!file.is_open()) return;
 
-    movies.clear(); 
     std::string line;
-    while (std::getline(inFile, line)) {
+    movies.clear(); // 기존 데이터 초기화
+
+    while (std::getline(file, line)) {
         std::stringstream ss(line);
         std::string id_s, title, genre, year_s;
 
-        // year_s를 읽어오도록 수정
+        // 💡 원래 서진님의 파일 구조인 4개 항목(파이프 3개)으로 정확히 복구합니다.
         if (std::getline(ss, id_s, '|') &&
             std::getline(ss, title, '|') &&
             std::getline(ss, genre, '|') &&
-            std::getline(ss, year_s)) {
+            std::getline(ss, year_s)) { // 맨 끝 항목은 뒤에 '|'를 붙이지 않습니다.
             
             int id = std::stoi(id_s);
             int releaseYear = std::stoi(year_s);
-            
-            // 완벽한 상태의 Movie 객체 생성 후 벡터에 삽입
-            movies.push_back(Movie(id, title, genre, releaseYear));
+
+            // Movie.h 규칙에 맞는 4개짜리 생성자로 영화 객체 생성
+            Movie movie(id, title, genre, releaseYear); 
+            movies.push_back(movie);
         }
     }
-    inFile.close();
+    file.close();
+}
+
+void MovieManager::syncRatings(const RatingManager& ratingMgr) {
+    const std::vector<Rating>& allRatings = ratingMgr.getRatings();
+
+    for (const auto& rating : allRatings) {
+        int mId = rating.getMovieId();
+        double score = rating.getScore();
+
+        for (auto& movie : movies) {
+            if (movie.getId() == mId) {
+                movie.addRating(score);
+                break;
+            }
+        }
+    }
 }

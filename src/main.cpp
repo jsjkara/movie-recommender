@@ -32,9 +32,11 @@ int main() {
     UserManager userMgr;
     RatingManager ratingMgr;
 
+    // 1. 프로그램 시작 시 파일에서 데이터 로드
     movieMgr.loadFromFile("movies.txt");
     userMgr.loadFromFile("users.txt");
     ratingMgr.loadFromFile("ratings.txt");
+    movieMgr.syncRatings(ratingMgr);
 
     int choice;
     while (true) {
@@ -105,10 +107,7 @@ int main() {
 
                 cout << "비교할 이웃 수(K) 입력 (추천 2~5): "; cin >> k;
                 cout << "추천받을 영화 개수(N) 입력: "; cin >> n;
-
-                cout << "\n[추천 연산 중...] 유사도를 분석하고 있습니다.\n";
                 
-                // 🚀 협업 필터링 핵심 함수 호출
                 auto recommendations = Recommender::recommend(targetUid, ratingMgr, k, n);
 
                 // 결과 출력 처리
