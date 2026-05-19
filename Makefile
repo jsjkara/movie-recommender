@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++17 -Wall -g -Iinclude
 TARGET   = recommend
 SRCDIR   = src
 OBJDIR   = obj
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/Movie.o $(OBJDIR)/MovieManager.o $(OBJDIR)/User.o $(OBJDIR)/UserManager.o $(OBJDIR)/Rating.o $(OBJDIR)/RatingManager.o $(OBJDIR)/SimilarityCalculator.o
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/Movie.o $(OBJDIR)/MovieManager.o $(OBJDIR)/User.o $(OBJDIR)/UserManager.o $(OBJDIR)/Rating.o $(OBJDIR)/RatingManager.o $(OBJDIR)/SimilarityCalculator.o $(OBJDIR)/Recommend.o 
  
 all: $(TARGET)
  
