@@ -1,1 +1,15 @@
 *.o
+*.a
+*.out
+
+obj/
+
+main
+app
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+
