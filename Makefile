@@ -3,7 +3,16 @@ CXXFLAGS = -std=c++17 -Wall -g -Iinclude
 TARGET   = recommend
 SRCDIR   = src
 OBJDIR   = obj
-OBJS = $(OBJDIR)/main.o $(OBJDIR)/Movie.o $(OBJDIR)/MovieManager.o $(OBJDIR)/User.o $(OBJDIR)/UserManager.o $(OBJDIR)/Rating.o $(OBJDIR)/RatingManager.o $(OBJDIR)/SimilarityCalculator.o $(OBJDIR)/Recommend.o 
+
+# 💡 OBJS 목록에서 오타 수정 및 안 쓰는 파일 정리
+OBJS = $(OBJDIR)/main.o \
+       $(OBJDIR)/Movie.o \
+       $(OBJDIR)/MovieManager.o \
+       $(OBJDIR)/User.o \
+       $(OBJDIR)/UserManager.o \
+       $(OBJDIR)/Rating.o \
+       $(OBJDIR)/RatingManager.o \
+       $(OBJDIR)/Recommender.o 
  
 all: $(TARGET)
  
@@ -15,7 +24,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
  
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
- 
+    
 clean:
 	rm -rf $(OBJDIR) $(TARGET)
 
