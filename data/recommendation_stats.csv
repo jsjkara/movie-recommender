@@ -1,0 +1,4 @@
+Timestamp,TargetUserID,RequestedGenre,Rank,RecommendedMovieTitle,RecommendationScore
+2026-06-04 15:57:38,2,SF,1,"어벤져스",8.1
+2026-06-04 15:58:45,3,ALL,1,"안시성",11.6
+2026-06-04 15:58:45,3,ALL,2,"인사이드 아웃",9.4

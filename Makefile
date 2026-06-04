@@ -11,7 +11,9 @@ OBJS = $(OBJDIR)/main.o \
        $(OBJDIR)/UserManager.o \
        $(OBJDIR)/Rating.o \
        $(OBJDIR)/RatingManager.o \
-       $(OBJDIR)/Recommender.o 
+       $(OBJDIR)/Recommender.o \
+       $(OBJDIR)/StatisticsExporter.o 
+
  
 all: $(TARGET)
  

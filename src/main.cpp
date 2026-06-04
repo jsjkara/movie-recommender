@@ -7,6 +7,7 @@
 #include "UserManager.h"
 #include "RatingManager.h" 
 #include "Recommender.h" 
+#include "StatisticsExporter.h"
 
 using namespace std;
 
@@ -53,7 +54,6 @@ void handleAddRating(MovieManager& movieMgr, UserManager& userMgr, RatingManager
     }
 }
 
-// [메뉴 8] 개인 맞춤 영화 추천 및 화면 출력 처리 함수 (장르 필터 및 제목 출력 탑재!)
 void handleRecommendation(const MovieManager& movieMgr, const UserManager& userMgr, const RatingManager& ratingMgr) {
     int targetUid, k, n;
     cout << "추천을 받을 사용자 ID 입력: "; cin >> targetUid;
@@ -66,21 +66,15 @@ void handleRecommendation(const MovieManager& movieMgr, const UserManager& userM
     cout << "비교할 이웃 수(K) 입력 (추천 2~5): "; cin >> k;
     cout << "추천받을 영화 개수(N) 입력: "; cin >> n;
     
-    // 장르 필터 조건 입력 (엔터 치면 전체 추천)
     string targetGenre;
     cout << "원하는 장르 입력 (전체 추천은 엔터): ";
     cin.ignore(); 
     std::getline(cin, targetGenre);
-   
+    
     auto recommendations = Recommender::recommend(targetUid, ratingMgr, movieMgr, k, n, targetGenre);
 
     if (recommendations.empty()) {
         cout << "\nℹ️ 추천할 수 있는 영화가 없습니다.\n";
-        if (!targetGenre.empty()) {
-            cout << "(원인: 해당 장르(" << targetGenre << ")를 평가한 이웃이 없거나 매칭되는 영화가 없을 수 있습니다.)\n";
-        } else {
-            cout << "(원인: 해당 사용자의 평점 기록이 없거나, 유사한 취향의 다른 유저가 없을 수 있습니다.)\n";
-        }
     } else {
         cout << "\n🎉 [사용자 " << targetUid << "님을 위한 맞춤 추천 영화 목록";
         if (!targetGenre.empty()) cout << " (장르: " << targetGenre << ")";
@@ -88,19 +82,21 @@ void handleRecommendation(const MovieManager& movieMgr, const UserManager& userM
         cout << "---------------------------------------------\n";
         int rank = 1;
         for (const auto& item : recommendations) {
-            int movieId = item.first;
-            double predictedScore = item.second;
+            string movieTitle = movieMgr.getMovieTitleById(item.first); 
+            if (movieTitle.empty()) movieTitle = "알 수 없는 영화";
             
-            string movieTitle = movieMgr.getMovieTitleById(movieId); 
-            if (movieTitle.empty()) {
-                movieTitle = "알 수 없는 영화 (ID: " + to_string(movieId) + ")";
-            }
-     
             cout << rank << "위 | 영화 제목: " << movieTitle 
-                 << " (추천 가중치 점수: " << predictedScore << ")\n";
+                 << " (추천 가중치 점수: " << item.second << ")\n";
             rank++;
         }
         cout << "---------------------------------------------\n";
+
+        std::string csvPath = "data/recommendation_stats.csv";
+        bool success = StatisticsExporter::exportToCSV(csvPath, targetUid, targetGenre, recommendations, movieMgr, ratingMgr);
+        if (success) {
+            cout << "📊 [시스템] 추천 통계 데이터가 다음 경로에 안전하게 누적 저장되었습니다:\n";
+            cout << "   👉 " << csvPath << "\n";
+        }
     }
 }
 
