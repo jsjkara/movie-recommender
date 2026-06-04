@@ -19,5 +19,7 @@ public:
     std::vector<double> getScoresByMovieId(int movieId) const;
     
     const std::vector<Rating>& getRatings() const { return ratings; }
+
+    std::string getMovieGenreById(int id) const;
     
 };

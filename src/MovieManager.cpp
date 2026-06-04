@@ -29,7 +29,6 @@ void MovieManager::printAllMovies() const {
     printMovies(movies); 
 }
 
-
 // 제목 필터링 구현 (Pure Logic)
 std::vector<Movie> MovieManager::getMoviesByTitle(const std::string& target) const {
     std::vector<Movie> result;
@@ -57,7 +56,7 @@ std::string MovieManager::inputTargetTitle() const {
     return target;
 }
 
-// UI: 벡터 데이터를 받아서 순수하게 텍스트만 찍어주는 하위 함수 (재사용성 극대화)
+// UI: 벡터 데이터를 받아서 순수하게 텍스트만 찍어주는 하위 함수
 void MovieManager::printMovies(const std::vector<Movie>& movieList) const {
     for (const auto& m : movieList) {
         std::cout << m << std::endl; 
@@ -146,4 +145,37 @@ void MovieManager::syncRatings(const RatingManager& ratingMgr) {
             }
         }
     }
+}
+
+// 장르 기준 필터링 함수
+std::vector<Movie> MovieManager::filterByGenre(const std::vector<Movie>& candidates, const std::string& genre) const {
+    if (genre.empty()) return candidates;
+
+    std::vector<Movie> result;
+    for (const auto& movie : candidates) {
+        if (movie.getGenre() == genre) { 
+            result.push_back(movie);
+        }
+    }
+    return result;
+}
+
+// 🔥 [새로 추가된 핵심 헬퍼] 영화 ID를 받아 일치하는 영화의 제목을 반환하는 함수
+std::string MovieManager::getMovieTitleById(int id) const {
+    for (const auto& m : movies) {
+        if (m.getId() == id) {
+            return m.getTitle(); 
+        }
+    }
+    return ""; 
+}
+
+// 🔥 [새로 추가된 핵심 헬퍼] 영화 ID를 받아 일치하는 영화의 장르를 반환하는 함수
+std::string MovieManager::getMovieGenreById(int id) const {
+    for (const auto& m : movies) {
+        if (m.getId() == id) {
+            return m.getGenre(); 
+        }
+    }
+    return "";
 }

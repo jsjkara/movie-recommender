@@ -12,7 +12,7 @@ using namespace std;
 
 static constexpr double MIN_RATING = 0.0;
 static constexpr double MAX_RATING = 5.0;
-static constexpr std::streamsize STREAM_IGNORE_MAX = std::numeric_limits<std::streamsize>::max();
+static constexpr std::streamsize STREAM_IGNORE_MAX = std::numeric_limits<std::streamsize>::max(); 
 
 // 메뉴 출력 함수
 void printMenu() {
@@ -26,7 +26,7 @@ void printMenu() {
     cout << "5. 전체 사용자 목록 출력\n";
     cout << "6. 영화 평점 입력\n";
     cout << "7. 전체 평점 기록 출력\n";
-    cout << "8. 😎 개인 맞춤 영화 추천\n"; 
+    cout << "8. 😎 개인 맞춤 영화 추천 (장르 필터 가능!)\n"; 
     cout << "0. 프로그램 종료\n";
     cout << "===============================\n";
     cout << "선택: ";
@@ -53,7 +53,7 @@ void handleAddRating(MovieManager& movieMgr, UserManager& userMgr, RatingManager
     }
 }
 
-// [메뉴 8] 개인 맞춤 영화 추천 및 화면 출력 처리 함수
+// [메뉴 8] 개인 맞춤 영화 추천 및 화면 출력 처리 함수 (장르 필터 및 제목 출력 탑재!)
 void handleRecommendation(const MovieManager& movieMgr, const UserManager& userMgr, const RatingManager& ratingMgr) {
     int targetUid, k, n;
     cout << "추천을 받을 사용자 ID 입력: "; cin >> targetUid;
@@ -66,20 +66,37 @@ void handleRecommendation(const MovieManager& movieMgr, const UserManager& userM
     cout << "비교할 이웃 수(K) 입력 (추천 2~5): "; cin >> k;
     cout << "추천받을 영화 개수(N) 입력: "; cin >> n;
     
-    auto recommendations = Recommender::recommend(targetUid, ratingMgr, k, n);
+    // 장르 필터 조건 입력 (엔터 치면 전체 추천)
+    string targetGenre;
+    cout << "원하는 장르 입력 (전체 추천은 엔터): ";
+    cin.ignore(); 
+    std::getline(cin, targetGenre);
+   
+    auto recommendations = Recommender::recommend(targetUid, ratingMgr, movieMgr, k, n, targetGenre);
 
     if (recommendations.empty()) {
         cout << "\nℹ️ 추천할 수 있는 영화가 없습니다.\n";
-        cout << "(원인: 해당 사용자의 평점 기록이 없거나, 유사한 취향의 다른 유저가 없을 수 있습니다.)\n";
+        if (!targetGenre.empty()) {
+            cout << "(원인: 해당 장르(" << targetGenre << ")를 평가한 이웃이 없거나 매칭되는 영화가 없을 수 있습니다.)\n";
+        } else {
+            cout << "(원인: 해당 사용자의 평점 기록이 없거나, 유사한 취향의 다른 유저가 없을 수 있습니다.)\n";
+        }
     } else {
-        cout << "\n🎉 [사용자 " << targetUid << "님을 위한 맞춤 추천 영화 목록] 🎉\n";
+        cout << "\n🎉 [사용자 " << targetUid << "님을 위한 맞춤 추천 영화 목록";
+        if (!targetGenre.empty()) cout << " (장르: " << targetGenre << ")";
+        cout << "] 🎉\n";
         cout << "---------------------------------------------\n";
         int rank = 1;
         for (const auto& item : recommendations) {
             int movieId = item.first;
             double predictedScore = item.second;
             
-            cout << rank << "위 | 영화 ID: " << movieId 
+            string movieTitle = movieMgr.getMovieTitleById(movieId); 
+            if (movieTitle.empty()) {
+                movieTitle = "알 수 없는 영화 (ID: " + to_string(movieId) + ")";
+            }
+     
+            cout << rank << "위 | 영화 제목: " << movieTitle 
                  << " (추천 가중치 점수: " << predictedScore << ")\n";
             rank++;
         }
@@ -101,6 +118,7 @@ int main() {
     while (true) {
         printMenu();
         
+        // 입력 예외 처리
         if (!(cin >> choice)) {
             cout << "올바른 숫자를 입력해주세요.\n";
             cin.clear();
@@ -108,6 +126,7 @@ int main() {
             continue;
         }
 
+        // 프로그램 안전 저장 및 종료 제어
         if (choice == 0) {
             movieMgr.saveToFile("data/movies.txt");
             userMgr.saveToFile("data/users.txt");
@@ -116,6 +135,7 @@ int main() {
             break;
         }
 
+        // 라우터 마일스톤 분기 (
         switch (choice) {
             case 1:  movieMgr.addMovie();           break;
             case 2:  movieMgr.searchByTitle();      break;
