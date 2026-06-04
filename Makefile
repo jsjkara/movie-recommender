@@ -4,7 +4,6 @@ TARGET   = recommend
 SRCDIR   = src
 OBJDIR   = obj
 
-# 💡 OBJS 목록에서 오타 수정 및 안 쓰는 파일 정리
 OBJS = $(OBJDIR)/main.o \
        $(OBJDIR)/Movie.o \
        $(OBJDIR)/MovieManager.o \
