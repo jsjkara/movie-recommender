@@ -86,7 +86,7 @@ void handleRecommendation(const MovieManager& movieMgr, const UserManager& userM
             if (movieTitle.empty()) movieTitle = "알 수 없는 영화";
             
             cout << rank << "위 | 영화 제목: " << movieTitle 
-                 << " (추천 가중치 점수: " << item.second << ")\n";
+                 << " (추천 유사도 점수: " << item.second << ")\n";
             rank++;
         }
         cout << "---------------------------------------------\n";
